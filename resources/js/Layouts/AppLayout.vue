@@ -4,7 +4,7 @@ import Footer from '@/Components/Footer.vue';
 </script>
 
 <template>
-<div class="bg-stone-100 font-sans dark:bg-stone-900 text-gray-700 dark:text-gray-300">
+<div class="bg-stone-100 font-main dark:bg-stone-900 text-gray-700 dark:text-gray-300">
   <NavBar />
   <main class="min-h-screen">
     <slot />

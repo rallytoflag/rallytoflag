@@ -17,7 +17,7 @@ module.exports = {
             },
             fontFamily: {
               'logo': ['UnifrakturMaguntia', 'cursive'],
-              'sans': ['Open+Sans'],
+              'main': ['Open+Sans'],
             },
         },
     },
