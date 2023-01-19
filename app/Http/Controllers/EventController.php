@@ -102,14 +102,6 @@ class EventController extends Controller
       ]);
 
       if ($request->hasFile('images')) {
-        $images = $request->file('images');
-        foreach ($images as $image) {
-          $path = $image->store('images', 'public');
-          EventImage::create([
-            'path' => $path,
-            'event_id' => $event->id,
-          ]);
-        }
       }
 
       return redirect()->route('event.show', $event);
@@ -229,6 +221,23 @@ class EventController extends Controller
       }
       else {
         return redirect()->route('dashboard')->with('error', 'Event could not be deleted');
+      }
+    }
+
+    /*
+     * Add an image to an event
+     * @param array $images
+     * @param \App\Models\Event $event
+     * @return void
+     */
+    private function uploadImages($images, Event $event)
+    {
+      foreach ($images as $image) {
+        if (env('APP_ENV') === 'production') {
+          $event->addMedia($image)->toCollectionOnDisk('images', 'do');
+        } else if (env('APP_ENV') === 'local') {
+          $event->addMedia($image)->toCollectionOnDisk('images', 'public');
+        }
       }
     }
 }
