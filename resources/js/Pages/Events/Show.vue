@@ -27,11 +27,11 @@ onMounted(() => {
 });
 
 const editEvent = () => {
-  Inertia.visit(route('event.edit', props.event.id));
+  Inertia.visit(route('event.edit', props.event[0].id));
 };
 
 const deleteEvent = () => {
-  confirm('Are you sure you want to delete this event?') && Inertia.delete(route('event.destroy', props.event.id));
+  confirm('Are you sure you want to delete this event?') && Inertia.delete(route('event.destroy', props.event[0].id));
 };
 
 </script>
@@ -57,25 +57,25 @@ const deleteEvent = () => {
     </div>
 
     <div>
-      <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100 py-2">{{ event.title }}</h1>
+      <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100 py-2">{{ event[0].title }}</h1>
     </div>
 
     <div class="text-xl py-2 ">
-      <p v-if="event.end_date !== null">{{ event.start_date }} until {{ event.end_date }}</p>
-      <p v-else>{{ event.start_date }}</p>
-      <p v-if="event.start_time !== null">Begins at {{ event.start_time }}</p>
+      <p v-if="event[0].end_date !== null">{{ event[0].start_date }} until {{ event[0].end_date }}</p>
+      <p v-else>{{ event[0].start_date }}</p>
+      <p v-if="event[0].start_time !== null">Begins at {{ event[0].start_time }}</p>
     </div>
 
     <p class="py-2">
-      {{ event.location }}
+      {{ event[0].location }}
     </p>
 
-    <a v-if="event.url !== null" :href="event.url" class="underline text-violet-700 dark:text-violet-500 py-2">
-      {{ event.url }}
+    <a v-if="event[0].url !== null" :href="event[0].url" class="underline text-violet-700 dark:text-violet-500 py-2">
+      {{ event[0].url }}
     </a>
 
     <p class="pt-4 leading-loose break-words">
-      {{ event.description }}
+      {{ event[0].description }}
     </p>
   </div> 
   <div v-if="$page.props.auth.user">

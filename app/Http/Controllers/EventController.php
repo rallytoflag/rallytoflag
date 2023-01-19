@@ -230,17 +230,17 @@ class EventController extends Controller
 
       if ($request->hasFile('images')) {
         // Delete old images
-        EventImage::where('event_id', $event->id)->delete();
+        $images = $event->getMedia('images');
+
+        if ($images) {
+          foreach ($images as $image) {
+            $image->delete();
+          }
+        }
 
         // Add new images
         $images = $request->file('images');
-        foreach ($images as $image) {
-          $path = $image->store('images', 'public');
-          EventImage::create([
-            'path' => $path,
-            'event_id' => $event->id,
-          ]);
-        }
+        $this->uploadImages($images, $event);
       }
 
       return redirect()->route('event.show', $event);
