@@ -3,10 +3,15 @@ import {onMounted} from 'vue';
 import {Inertia} from '@inertiajs/inertia';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+
 const props = defineProps({
-  event: Object,
-  images: Array,
+    event: {
+        type: Object,
+        required: true,
+    },
 });
+
+const images = props.event[0].media;
 
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
@@ -36,15 +41,15 @@ const deleteEvent = () => {
     <div v-if="images.length > 0" class="flex flex-wrap justify-center" id="gallery">
       <div v-if="images.length > 1">
         <div class="grid grid-cols-2 gap-2 xs:grid-cols-1">
-          <div v-for="" :key="image.id" >
-            <a :href="" :data-size="" >
-              <img :src="" class="object-cover w-full h-full shadow-md dark:shadow-none rounded-lg" />
+          <div v-for="image in images" :key="image.id" >
+            <a :href="image.original_url" >
+              <img :src="image.original_url" class="object-cover w-full h-full shadow-md dark:shadow-none rounded-lg" />
             </a>
           </div>
         </div>
       </div>
       <div v-else>
-        <img :src="" class="object-cover w-full h-full shadow-md dark:shadow-none rounded-lg" />
+        <img :src="images[0].original_url" class="object-cover w-full h-full shadow-md dark:shadow-none rounded-lg" />
       </div>
     </div>
     <div v-else>

@@ -24,9 +24,9 @@ class EventController extends Controller
     {
       foreach ($images as $image) {
         if (env('APP_ENV') === 'production') {
-          $event->addMedia($image)->toCollectionOnDisk('images', 'do');
+          $event->addMedia($image)->toMediaCollection('images', 'do');
         } else if (env('APP_ENV') === 'local') {
-          $event->addMedia($image)->toCollectionOnDisk('images', 'public');
+          $event->addMedia($image)->toMediaCollection('images', 'public');
         }
       }
     }
@@ -152,7 +152,9 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-      $event = Event::where('id', $event->id)->with('media')->first();
+      $event = Event::where('id', $event->id)
+        ->with('media')
+        ->get();
       return inertia('Events/Show', [
         'event' => $event,
       ]);

@@ -20,4 +20,10 @@ class Event extends Model implements HasMedia
     public function getFirstImage() {
       return $this->getMedia('images')->first()->getUrl();
     }
+
+    public function getImages() {
+      return $this->getMedia('images')->map(function ($image) {
+        return $image->getUrl();
+      });
+    }
 }
