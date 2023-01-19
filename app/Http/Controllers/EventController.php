@@ -240,4 +240,25 @@ class EventController extends Controller
         }
       }
     }
+
+    /*
+     * Geocode the location based on address
+     * @param string $location
+     * @return array
+     */
+    private function GeoCode($location)
+    {
+      //geocode the location
+      $httpClient = new \GuzzleHttp\Client();
+      $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
+      $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
+
+      $result = $geocoder->geocodeQuery(GeocodeQuery::create($location));
+
+      //assign the latitude and longitude to the event
+      $latitude = $result->first()->getCoordinates()->getLatitude();
+      $longitude = $result->first()->getCoordinates()->getLongitude();
+
+      return array($latitude, $longitude);
+    }
 }
