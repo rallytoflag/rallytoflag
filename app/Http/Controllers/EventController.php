@@ -14,6 +14,44 @@ use GuzzleHttp\Client;
 
 class EventController extends Controller
 {
+    /*
+     * Add an image to an event
+     * @param array $images
+     * @param \App\Models\Event $event
+     * @return void
+     */
+    private function uploadImages($images, Event $event)
+    {
+      foreach ($images as $image) {
+        if (env('APP_ENV') === 'production') {
+          $event->addMedia($image)->toCollectionOnDisk('images', 'do');
+        } else if (env('APP_ENV') === 'local') {
+          $event->addMedia($image)->toCollectionOnDisk('images', 'public');
+        }
+      }
+    }
+
+    /*
+     * Geocode the location based on address
+     * @param string $location
+     * @return array
+     */
+    private function GeoCode($location)
+    {
+      //geocode the location
+      $httpClient = new \GuzzleHttp\Client();
+      $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
+      $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
+
+      $result = $geocoder->geocodeQuery(GeocodeQuery::create($location));
+
+      //assign the latitude and longitude to the event
+      $latitude = $result->first()->getCoordinates()->getLatitude();
+      $longitude = $result->first()->getCoordinates()->getLongitude();
+
+      return array($latitude, $longitude);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -102,6 +140,8 @@ class EventController extends Controller
       ]);
 
       if ($request->hasFile('images')) {
+        $images = $request->file('images');
+        $this->uploadImages($images, $event);
       }
 
       return redirect()->route('event.show', $event);
@@ -222,43 +262,5 @@ class EventController extends Controller
       else {
         return redirect()->route('dashboard')->with('error', 'Event could not be deleted');
       }
-    }
-
-    /*
-     * Add an image to an event
-     * @param array $images
-     * @param \App\Models\Event $event
-     * @return void
-     */
-    private function uploadImages($images, Event $event)
-    {
-      foreach ($images as $image) {
-        if (env('APP_ENV') === 'production') {
-          $event->addMedia($image)->toCollectionOnDisk('images', 'do');
-        } else if (env('APP_ENV') === 'local') {
-          $event->addMedia($image)->toCollectionOnDisk('images', 'public');
-        }
-      }
-    }
-
-    /*
-     * Geocode the location based on address
-     * @param string $location
-     * @return array
-     */
-    private function GeoCode($location)
-    {
-      //geocode the location
-      $httpClient = new \GuzzleHttp\Client();
-      $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
-      $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
-
-      $result = $geocoder->geocodeQuery(GeocodeQuery::create($location));
-
-      //assign the latitude and longitude to the event
-      $latitude = $result->first()->getCoordinates()->getLatitude();
-      $longitude = $result->first()->getCoordinates()->getLongitude();
-
-      return array($latitude, $longitude);
     }
 }
