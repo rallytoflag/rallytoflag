@@ -141,7 +141,7 @@ watch(
   </div>
 
   <div class="col-span-10">
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <EventCard v-for="event in events.data" :key="event.id" :event="event" />
     </div>
     <Paginator :links="events.links" class="mt-4"/>
