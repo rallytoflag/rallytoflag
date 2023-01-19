@@ -10,7 +10,7 @@ const props = defineProps({
 <Link :href="route('event.show', event.id)">
 <div class="rounded-lg bg-neutral-100 dark:bg-neutral-800
 border border-gray-500 hover:border-violet-800 dark:hover:border-violet-300 rounded-lg">
-  <img v-if="event.image !== null" :src="'/storage/' + event.image" alt="event image" 
+  <img v-if="event.media.length > 0" :src="event.media[0].original_url" alt="event image" 
   class="xl:lg:md:sm:max-h-[200px] xs:max-h-[100px] object-cover w-full rounded-t-lg" />
   <img v-else src="castle.png" alt="event image" 
   class="h-[200px] sm:h-[300px] object-cover w-full rounded-t-lg" />

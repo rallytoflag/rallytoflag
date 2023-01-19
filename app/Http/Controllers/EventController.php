@@ -68,7 +68,7 @@ class EventController extends Controller
               $query->where('start_date', '>=', $request['date']);
             }
           })
-          ->with('getFirstImage')
+          ->with('media')
           ->orderBy('created_at', 'desc')
           ->paginate(9)
           ->withQueryString(),
