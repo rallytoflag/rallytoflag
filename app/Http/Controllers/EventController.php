@@ -36,7 +36,7 @@ class EventController extends Controller
      * @param string $location
      * @return array
      */
-    private function GeoCode($location)
+    private function GeoEncode($location)
     {
       //geocode the location
       $httpClient = new \GuzzleHttp\Client();
@@ -112,16 +112,9 @@ class EventController extends Controller
         'images.*' => 'nullable|file|image|mimes:jpeg,webp,png,jpg,gif,svg|max:2048',
       ]);
 
-      //geocode the location
-      $httpClient = new Client();
-      $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
-      $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
-
-      $result = $geocoder->geocodeQuery(GeocodeQuery::create($fields['location']));
-
-      //assign the latitude and longitude to the event
-      $latitude = $result->first()->getCoordinates()->getLatitude();
-      $longitude = $result->first()->getCoordinates()->getLongitude();
+      $coords = $this->GeoEncode($fields['location']);
+      $latitude = $coords[0];
+      $longitude = $coords[1];
 
       $event = Event::create([
         'title' => $request->title,
@@ -201,16 +194,9 @@ class EventController extends Controller
       ]);
 
       if($fields['location'] != $event->location){
-        //geocode the location
-        $httpClient = new \GuzzleHttp\Client();
-        $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
-        $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
-
-        $result = $geocoder->geocodeQuery(GeocodeQuery::create($fields['location']));
-
-        //assign the latitude and longitude to the event
-        $latitude = $result->first()->getCoordinates()->getLatitude();
-        $longitude = $result->first()->getCoordinates()->getLongitude();
+        $coords = GeoEncode($fields['location']);
+        $event->latitude = $coords[0];
+        $event->longitude = $coords[1];
       }
       else {
         $latitude = $event->latitude;
@@ -254,7 +240,7 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-      if(Event::destroy($event->id) && $event->getMedia('images')->delete()){
+      if(Event::destroy($event->id)){
         return redirect()->route('dashboard')->with('success', 'Event deleted successfully');
       }
       else {
