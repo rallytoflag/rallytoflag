@@ -44,10 +44,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
       'events' => Event::query()
         ->where('user_id', auth()->user()->id)
-        ->addSelect(['image' => EventImage::select('path')
-          ->whereColumn('event_id', 'events.id')
-          ->limit(1)
-        ])
+        ->with('media')
         ->orderBy('created_at', 'desc')
         ->paginate(10)
         ->withQueryString()
