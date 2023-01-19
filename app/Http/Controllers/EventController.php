@@ -69,10 +69,7 @@ class EventController extends Controller
               $query->where('start_date', '>=', $request['date']);
             }
           })
-          ->addSelect(['image' => EventImage::select('path')
-            ->whereColumn('event_id', 'events.id')
-            ->limit(1)
-          ])
+          ->with('getFirstImage')
           ->orderBy('created_at', 'desc')
           ->paginate(9)
           ->withQueryString(),
@@ -155,11 +152,10 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+      $event = Event::where('id', $event->id)->with('media')->first();
       return inertia('Events/Show', [
-        'event' => Event::findOrFail($event->id),
-        'images' => EventImage::where('event_id', $event->id)->get(),
-      ],
-      );
+        'event' => $event,
+      ]);
     }
 
     /**
@@ -256,7 +252,7 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-      if(Event::destroy($event->id)){
+      if(Event::destroy($event->id) && $event->getMedia('images')->delete()){
         return redirect()->route('dashboard')->with('success', 'Event deleted successfully');
       }
       else {
