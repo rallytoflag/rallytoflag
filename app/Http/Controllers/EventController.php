@@ -23,7 +23,7 @@ class EventController extends Controller
     {
       foreach ($images as $image) {
         if (env('APP_ENV') === 'production') {
-          $event->addMedia($image)->toMediaCollection('images', 'do');
+          $event->addMedia($image)->toMediaCollection('images', 'public');
         } else if (env('APP_ENV') === 'local') {
           $event->addMedia($image)->toMediaCollection('images', 'public');
         }
