@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
-use App\Models\EventImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Geocoder\Query\GeocodeQuery;
@@ -164,7 +163,6 @@ class EventController extends Controller
       if (Auth::check() && Auth::user()->id == $event->user_id){
         return inertia('Events/Edit', [
           'event' => Event::findOrFail($event->id),
-          'images' => EventImage::where('event_id', $event->id)->get(),
         ]);
       }
       else {

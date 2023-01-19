@@ -7,7 +7,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\AdminController;
 use App\Models\Event;
-use App\Models\EventImage;
 
 /*
 |--------------------------------------------------------------------------
