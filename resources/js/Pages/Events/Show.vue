@@ -36,6 +36,7 @@ const deleteEvent = () => {
 
 </script>
 <template>
+  <Head :title="event[0].title" />
 <div class="flex flex-col sm:justify-center items-center pt-6 pb-10">
   <div class="text-lg text-gray-900 dark:text-gray-400 w-full lg:md:max-w-4xl sm:max-w-md">
     <div v-if="images.length > 0" class="flex flex-wrap justify-center" id="gallery">
