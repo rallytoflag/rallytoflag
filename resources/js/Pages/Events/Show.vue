@@ -37,20 +37,19 @@ const deleteEvent = () => {
 </script>
 <template>
   <Head :title="event[0].title" />
-<div class="flex flex-col sm:justify-center items-center pt-6 pb-10">
+<div class="grid place-items-center mx-4">
   <div class="text-lg text-gray-900 dark:text-gray-400 w-full lg:md:max-w-4xl sm:max-w-md">
     <div v-if="images.length > 0" class="flex flex-wrap justify-center" id="gallery">
-      <div v-if="images.length > 1">
-        <div class="grid grid-cols-2 gap-2 xs:grid-cols-1">
-          <div v-for="image in images" :key="image.id" >
-            <a :href="image.original_url" >
-              <img :src="image.original_url" class="object-cover w-full h-full shadow-md dark:shadow-none rounded-lg" />
-            </a>
-          </div>
-        </div>
+      <div v-if="images.length > 1" class="relative w-full">
+        <a v-for="(image, index) in images" :href="image.original_url" :key="index" :class="index === 0 ? 'block' : 'hidden'">
+          <img :src="image.original_url" class="w-full max-h-96 object-cover shadow-md dark:shadow-none rounded-lg"   />
+          <SecondaryButton class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <span class="text-2xl">View Gallery</span>
+          </SecondaryButton>
+        </a>
       </div>
       <div v-else>
-        <img :src="images[0].original_url" class="object-cover w-full h-full shadow-md dark:shadow-none rounded-lg" />
+        <img :src="images[0].original_url" class="object-cover w-full max-h-96 shadow-md dark:shadow-none rounded-lg" />
       </div>
     </div>
     <div v-else>
