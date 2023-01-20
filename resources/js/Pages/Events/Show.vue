@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, onUnmounted} from 'vue';
+import {onMounted, onUnmounted, ref} from 'vue';
 import {Inertia} from '@inertiajs/inertia';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -11,27 +11,10 @@ const props = defineProps({
     },
 });
 
+//get images from props
 const images = props.event[0].media;
 
-import PhotoSwipeLightbox from 'photoswipe/lightbox';
-import 'photoswipe/style.css';
-
-const lightbox = new PhotoSwipeLightbox({
-  gallery: '#gallery',
-  children: 'a',
-  initialZoomLevel: 'fit',
-  secondaryZoomLevel: 1.5,
-  maxZoomLevel: 1,
-  pswpModule: () => import('photoswipe'),
-});
-
-onMounted(() => {
-  lightbox.init();
-});
-
-onUnmounted(() => {
-  lightbox.destroy();
-});
+const photoIndex = ref(0);
 
 const editEvent = () => {
   Inertia.visit(route('event.edit', props.event[0].id));
@@ -46,21 +29,16 @@ const deleteEvent = () => {
   <Head :title="event[0].title" />
 <div class="grid place-items-center mx-4">
   <div class="text-lg text-gray-900 dark:text-gray-400 w-full lg:md:max-w-4xl sm:max-w-md">
-    <div v-if="images.length > 0" class="flex flex-wrap justify-center" id="gallery">
+    <div v-if="images.length > 0" class="flex flex-wrap justify-center">
       <div v-if="images.length > 1" class="relative w-full">
-        <a v-for="(image, index) in images" :href="image.original_url" :key="index" :class="index === 0 ? 'block' : 'hidden'">
-          <img :src="image.original_url" class="w-full max-h-96 object-cover shadow-md dark:shadow-none rounded-lg"   />
-          <SecondaryButton class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <span class="text-2xl">View Gallery</span>
-          </SecondaryButton>
-        </a>
+        <img v-for="(image, index) in images" :key="index" :class="index === photoIndex ? 'block' : 'hidden'" :src="image.original_url" class="w-full max-h-96 object-cover shadow-md dark:shadow-none rounded-lg"   />
       </div>
       <div v-else>
         <img :src="images[0].original_url" class="object-cover w-full max-h-96 shadow-md dark:shadow-none rounded-lg" />
       </div>
     </div>
     <div v-else>
-      <img src="/castle.png" class="object-cover w-full h-full shadow-md dark:shadow-none rounded-lg" />
+      <img src="/castle.png" class="object-cover w-full max-h-96 shadow-md dark:shadow-none rounded-lg" />
     </div>
 
     <div>
