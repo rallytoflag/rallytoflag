@@ -62,6 +62,9 @@ return [
             'region' => env('DO_DEFAULT_REGION'),
             'bucket' => env('DO_BUCKET'),
             'endpoint' => env('DO_ENDPOINT'),
+            'url' => env('DO_URL'),
+            'use_path_style_endpoint' => env('DO_USE_PATH_STYLE_ENDPOINT', false),
+
         ],
     ],
 
