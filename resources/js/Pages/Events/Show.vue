@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted} from 'vue';
+import {onMounted, onUnmounted} from 'vue';
 import {Inertia} from '@inertiajs/inertia';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
@@ -19,11 +19,16 @@ import 'photoswipe/style.css';
 const lightbox = new PhotoSwipeLightbox({
   gallery: '#gallery',
   children: 'a',
-  pswpModule: () => import('photoswipe')
+  pswpModule: () => import('photoswipe'),
+  initialZoomLevel: 'fit',
 });
 
 onMounted(() => {
   lightbox.init();
+});
+
+onUnmounted(() => {
+  lightbox.destroy();
 });
 
 const editEvent = () => {
