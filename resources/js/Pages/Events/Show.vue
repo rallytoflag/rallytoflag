@@ -24,6 +24,22 @@ const deleteEvent = () => {
   confirm('Are you sure you want to delete this event?') && Inertia.delete(route('event.destroy', props.event[0].id));
 };
 
+const incrementCounter = () => {
+  if (photoIndex.value < images.length - 1) {
+    photoIndex.value++;
+  } else {
+    photoIndex.value = 0;
+  }
+};
+
+const decrementCounter = () => {
+  if (photoIndex.value > 0) {
+    photoIndex.value--;
+  } else {
+    photoIndex.value = images.length - 1;
+  }
+};
+
 </script>
 <template>
   <Head :title="event[0].title" />
@@ -32,6 +48,18 @@ const deleteEvent = () => {
     <div v-if="images.length > 0" class="flex flex-wrap justify-center">
       <div v-if="images.length > 1" class="relative w-full">
         <img v-for="(image, index) in images" :key="index" :class="index === photoIndex ? 'block' : 'hidden'" :src="image.original_url" class="w-full max-h-96 object-cover shadow-md dark:shadow-none rounded-lg"   />
+        <button
+            @click="decrementCount()"
+            class="absolute z-20 inset-y-0 left-0 py-[25%] w-8 group cursor-pointer">
+            <font-awesome-icon icon="fa-solid fa-chevron-left" class="fas fa-chevron-left text-4xl text-gray-50 py-2 px-1 bg-gray-800 bg-opacity-80 hover:bg-opacity-100">
+            </font-awesome-icon>
+        </button>
+        <button
+            @click="incrementCount()"
+            class="absolute z-20 inset-y-0 right-0 py-[25%] w-8 group cursor-pointer overflow-x-hidden overflow-y-hidden">
+            <font-awesome-icon icon="fa-solid fa-chevron-right" class="fas fa-chevron-right text-4xl text-gray-50 py-2 px-1 bg-gray-800 bg-opacity-80 hover:bg-opacity-100">
+            </font-awesome-icon>
+        </button>
       </div>
       <div v-else>
         <img :src="images[0].original_url" class="object-cover w-full max-h-96 shadow-md dark:shadow-none rounded-lg" />
