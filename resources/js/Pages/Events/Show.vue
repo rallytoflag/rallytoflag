@@ -19,8 +19,10 @@ import 'photoswipe/style.css';
 const lightbox = new PhotoSwipeLightbox({
   gallery: '#gallery',
   children: 'a',
-  pswpModule: () => import('photoswipe'),
   initialZoomLevel: 'fit',
+  secondaryZoomLevel: 1.5,
+  maxZoomLevel: 1,
+  pswpModule: () => import('photoswipe'),
 });
 
 onMounted(() => {
