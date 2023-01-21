@@ -7,7 +7,6 @@ use Inertia\Inertia;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\AdminController;
 use App\Models\Event;
-use App\Models\EventImage;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,10 +43,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
       'events' => Event::query()
         ->where('user_id', auth()->user()->id)
-        ->addSelect(['image' => EventImage::select('path')
-          ->whereColumn('event_id', 'events.id')
-          ->limit(1)
-        ])
+        ->with('media')
         ->orderBy('created_at', 'desc')
         ->paginate(10)
         ->withQueryString()
@@ -60,18 +56,19 @@ Route::middleware('admin')->group(function () {
   Route::get('/admin/events', [AdminController::class, 'events'])->name('admin.events');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::middleware('auth', 'verified')->group(function () {
+  Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+  Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+  Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+  Route::patch('/events/{event}', [EventController::class, 'update'])->name('event.update');
+  Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('event.edit');
+  Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('event.destroy');
+  Route::post('/events', [EventController::class, 'store'])->name('event.store');
+  Route::get('/events/new', [EventController::class, 'create'])->name('event.create');
 });
 
 Route::get('/events', [EventController::class, 'index'])->name('event.index');
-Route::post('/events', [EventController::class, 'store'])->name('event.store')->middleware(['auth', 'verified']);;
-Route::get('/events/new', [EventController::class, 'create'])->name('event.create')->middleware(['auth', 'verified']);;
 Route::get('/events/{event}', [EventController::class, 'show'])->name('event.show');
-Route::patch('/events/{event}', [EventController::class, 'update'])->name('event.update')->middleware(['auth', 'verified']);;
-Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('event.edit')->middleware(['auth', 'verified']);
-Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('event.destroy')->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

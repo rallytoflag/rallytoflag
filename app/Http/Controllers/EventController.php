@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
-use App\Models\EventImage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Geocoder\Query\GeocodeQuery;
@@ -14,6 +13,40 @@ use GuzzleHttp\Client;
 
 class EventController extends Controller
 {
+    /*
+     * Add an image to an event
+     * @param array $images
+     * @param \App\Models\Event $event
+     * @return void
+     */
+    private function uploadImages($images, Event $event)
+    {
+      foreach ($images as $image) {
+        $event->addMedia($image)->toMediaCollection('images');
+      }
+    }
+
+    /*
+     * Geocode the location based on address
+     * @param string $location
+     * @return array
+     */
+    private function GeoEncode($location)
+    {
+      //geocode the location
+      $httpClient = new \GuzzleHttp\Client();
+      $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
+      $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
+
+      $result = $geocoder->geocodeQuery(GeocodeQuery::create($location));
+
+      //assign the latitude and longitude to the event
+      $latitude = $result->first()->getCoordinates()->getLatitude();
+      $longitude = $result->first()->getCoordinates()->getLongitude();
+
+      return array($latitude, $longitude);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -31,10 +64,7 @@ class EventController extends Controller
               $query->where('start_date', '>=', $request['date']);
             }
           })
-          ->addSelect(['image' => EventImage::select('path')
-            ->whereColumn('event_id', 'events.id')
-            ->limit(1)
-          ])
+          ->with('media')
           ->orderBy('created_at', 'desc')
           ->paginate(9)
           ->withQueryString(),
@@ -77,16 +107,9 @@ class EventController extends Controller
         'images.*' => 'nullable|file|image|mimes:jpeg,webp,png,jpg,gif,svg|max:2048',
       ]);
 
-      //geocode the location
-      $httpClient = new Client();
-      $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
-      $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
-
-      $result = $geocoder->geocodeQuery(GeocodeQuery::create($fields['location']));
-
-      //assign the latitude and longitude to the event
-      $latitude = $result->first()->getCoordinates()->getLatitude();
-      $longitude = $result->first()->getCoordinates()->getLongitude();
+      $coords = $this->GeoEncode($fields['location']);
+      $latitude = $coords[0];
+      $longitude = $coords[1];
 
       $event = Event::create([
         'title' => $request->title,
@@ -103,13 +126,7 @@ class EventController extends Controller
 
       if ($request->hasFile('images')) {
         $images = $request->file('images');
-        foreach ($images as $image) {
-          $path = $image->store('images', 'public');
-          EventImage::create([
-            'path' => $path,
-            'event_id' => $event->id,
-          ]);
-        }
+        $this->uploadImages($images, $event);
       }
 
       return redirect()->route('event.show', $event);
@@ -123,11 +140,12 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+      $event = Event::where('id', $event->id)
+        ->with('media')
+        ->get();
       return inertia('Events/Show', [
-        'event' => Event::findOrFail($event->id),
-        'images' => EventImage::where('event_id', $event->id)->get(),
-      ],
-      );
+        'event' => $event,
+      ]);
     }
 
     /**
@@ -141,7 +159,6 @@ class EventController extends Controller
       if (Auth::check() && Auth::user()->id == $event->user_id){
         return inertia('Events/Edit', [
           'event' => Event::findOrFail($event->id),
-          'images' => EventImage::where('event_id', $event->id)->get(),
         ]);
       }
       else {
@@ -171,16 +188,9 @@ class EventController extends Controller
       ]);
 
       if($fields['location'] != $event->location){
-        //geocode the location
-        $httpClient = new \GuzzleHttp\Client();
-        $provider = new \Geocoder\Provider\Mapbox\Mapbox($httpClient, env('VITE_MAPBOX'));
-        $geocoder = new \Geocoder\StatefulGeocoder($provider, 'en');
-
-        $result = $geocoder->geocodeQuery(GeocodeQuery::create($fields['location']));
-
-        //assign the latitude and longitude to the event
-        $latitude = $result->first()->getCoordinates()->getLatitude();
-        $longitude = $result->first()->getCoordinates()->getLongitude();
+        $coords = GeoEncode($fields['location']);
+        $event->latitude = $coords[0];
+        $event->longitude = $coords[1];
       }
       else {
         $latitude = $event->latitude;
@@ -200,17 +210,17 @@ class EventController extends Controller
 
       if ($request->hasFile('images')) {
         // Delete old images
-        EventImage::where('event_id', $event->id)->delete();
+        $images = $event->getMedia('images');
+
+        if ($images) {
+          foreach ($images as $image) {
+            $image->delete();
+          }
+        }
 
         // Add new images
         $images = $request->file('images');
-        foreach ($images as $image) {
-          $path = $image->store('images', 'public');
-          EventImage::create([
-            'path' => $path,
-            'event_id' => $event->id,
-          ]);
-        }
+        $this->uploadImages($images, $event);
       }
 
       return redirect()->route('event.show', $event);

@@ -19,7 +19,7 @@ const deleteEvent = () => {
 <tr>
   <td class="py-2">
     <Link :href="route('event.show', event.id)">
-      <img v-if="event.image !== null" :src="'/storage/' + event.image" class="w-10 h-10 rounded" />
+    <img v-if="event.media.length > 0" :src="event.media[0].original_url" class="w-10 h-10 rounded" />
       <img v-else src="/castle.png" class="w-10 h-10 rounded" />
     </Link>
   </td>

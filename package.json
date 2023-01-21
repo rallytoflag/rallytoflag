@@ -26,7 +26,6 @@
         "@fortawesome/free-solid-svg-icons": "^6.2.1",
         "@fortawesome/vue-fontawesome": "^3.0.2",
         "@vueuse/core": "^9.7.0",
-        "jquery": "^3.6.3",
-        "photoswipe": "^5.3.4"
+        "jquery": "^3.6.3"
     }
 }
