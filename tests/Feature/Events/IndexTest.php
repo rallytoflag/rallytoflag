@@ -8,14 +8,12 @@ use Tests\TestCase;
 
 class EventTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     *
-     * @return void
-     */
-    public function test_example()
+    /*
+     * Test events index page
+     * */
+    public function test_get_events()
     {
-        $response = $this->get('/');
+        $response = $this->get('/events');
 
         $response->assertStatus(200);
     }
