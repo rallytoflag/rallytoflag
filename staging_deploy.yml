@@ -1,0 +1,22 @@
+name: 'Deploy on push'
+
+on:
+  push:
+    branches:  
+      - staging
+  pull_request:
+    branches:  
+      - staging
+
+jobs:
+  forge-deploy:
+    name: 'Laravel Forge Deploy'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy
+        uses: jbrooksuk/laravel-forge-action@v1.0.4
+        with:
+          api_key: ${{ secrets.FORGE_API_TOKEN }}
+          server_id: ${{ secrets.FORGE_SERVER_ID }}
+          site_id: ${{ secrets.FORGE_STAGING_SITE_ID }}
