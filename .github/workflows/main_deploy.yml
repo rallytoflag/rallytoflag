@@ -44,4 +44,4 @@ jobs:
         with:
           api_key: ${{ secrets.FORGE_API_TOKEN }}
           server_id: ${{ secrets.FORGE_SERVER_ID }}
-          site_id: ${{ secrets.FORGE_MAIN_SITE_ID }}
+          site_id: ${{ secrets.FORGE_PROD_SITE_ID }}
