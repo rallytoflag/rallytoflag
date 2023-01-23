@@ -1,4 +1,4 @@
-# Official Repository for RallyToFlag
+# Official Repository for [Rally To Flag](https://rallytoflag.com)
 
 ## Tech Stack:
 - Laravel 9
@@ -8,6 +8,8 @@
 - Tailwind
 - PHP 8.1
 - Node 16
+- Laravel Forge
+- Digital Ocean
 
 ## Installation
 
